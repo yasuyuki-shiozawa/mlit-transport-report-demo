@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CheckCircle, Users, TrendingUp, FileText, Merge } from 'lucide-react'
 import { detectSimilarCompanies, generateVariationStats, normalizeCompanyName } from '@/utils/companyNameNormalizer'
+import MergeConfirmationModal from './MergeConfirmationModal'
 import sampleData from '@/sample_data.json'
 import variationData from '@/sample_variation_data.json'
 
@@ -13,6 +14,8 @@ const CompanyVariationAnalysis = () => {
   const [stats, setStats] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [showMergeModal, setShowMergeModal] = useState(false)
+  const [mergeHistory, setMergeHistory] = useState([])
 
   useEffect(() => {
     // サンプルデータと表記ゆれデータを結合
@@ -36,9 +39,39 @@ const CompanyVariationAnalysis = () => {
   }
 
   const handleMergeGroup = (group) => {
-    // 実際のシステムでは、ここでマスタデータの統合処理を行う
-    console.log('統合処理:', group)
-    alert(`「${group.suggestedName}」として統合処理を実行しました。`)
+    setSelectedGroup(group)
+    setShowMergeModal(true)
+  }
+
+  const handleConfirmMerge = (mergeData) => {
+    // 統合処理を実行
+    console.log('統合処理実行:', mergeData)
+    
+    // 統合履歴に追加
+    const historyEntry = {
+      id: Date.now(),
+      timestamp: mergeData.timestamp,
+      mergedName: mergeData.mergedName,
+      affectedCount: mergeData.affectedRecords.length,
+      reason: mergeData.mergeReason,
+      originalGroups: mergeData.affectedRecords.map(r => r.companyName)
+    }
+    setMergeHistory(prev => [historyEntry, ...prev])
+    
+    // 統合されたグループを表記ゆれリストから除去
+    setVariationGroups(prev => 
+      prev.filter(g => g.normalizedKey !== mergeData.groupId)
+    )
+    
+    // 統計を再計算
+    const remainingCompanies = allCompanies.filter(company => 
+      !mergeData.affectedRecords.some(affected => affected.id === company.id)
+    )
+    const updatedStats = generateVariationStats(remainingCompanies)
+    setStats(updatedStats)
+    
+    setShowMergeModal(false)
+    setSelectedGroup(null)
   }
 
   const getStatusBadge = (status) => {
@@ -248,6 +281,52 @@ const CompanyVariationAnalysis = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* 統合履歴 */}
+      {mergeHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5" />
+              統合履歴 ({mergeHistory.length}件)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {mergeHistory.map((entry) => (
+                <div key={entry.id} className="border rounded-lg p-3 bg-green-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h4 className="font-medium text-green-800">{entry.mergedName}</h4>
+                      <p className="text-sm text-green-600">
+                        {entry.affectedCount}件の表記ゆれを統合 | {new Date(entry.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800">完了</Badge>
+                  </div>
+                  {entry.reason && (
+                    <p className="text-sm text-gray-600 mb-2">理由: {entry.reason}</p>
+                  )}
+                  <div className="text-xs text-gray-500">
+                    統合対象: {entry.originalGroups.join(', ')}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 統合確認モーダル */}
+      <MergeConfirmationModal
+        isOpen={showMergeModal}
+        onClose={() => {
+          setShowMergeModal(false)
+          setSelectedGroup(null)
+        }}
+        group={selectedGroup}
+        onConfirm={handleConfirmMerge}
+      />
     </div>
   )
 }
