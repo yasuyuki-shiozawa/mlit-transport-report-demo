@@ -184,7 +184,7 @@ const DataManagement = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">全エリア</SelectItem>
-                {prefectures.map(pref => (
+                {prefectures.length > 0 && prefectures.map(pref => (
                   <SelectItem key={pref} value={pref}>{pref}</SelectItem>
                 ))}
               </SelectContent>
@@ -195,7 +195,7 @@ const DataManagement = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">全ステータス</SelectItem>
-                {statuses.map(status => (
+                {statuses.length > 0 && statuses.map(status => (
                   <SelectItem key={status} value={status}>{status}</SelectItem>
                 ))}
               </SelectContent>
@@ -540,7 +540,7 @@ const DataManagement = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {statuses.map(status => (
+                    {statuses.length > 0 && statuses.map(status => (
                       <SelectItem key={status} value={status}>{status}</SelectItem>
                     ))}
                   </SelectContent>
