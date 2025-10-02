@@ -1,0 +1,167 @@
+[
+  {
+    "id": 2000001,
+    "companyName": "東京バス株式会社",
+    "representativeName": "田中太郎",
+    "prefecture": "東京都",
+    "submissionDate": "2025-01-15",
+    "processingStatus": "処理済み",
+    "passengerCount": 150000,
+    "operatingRevenue": 50000000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000002,
+    "companyName": "(株)東京バス",
+    "representativeName": "田中太郎",
+    "prefecture": "東京都",
+    "submissionDate": "2025-02-15",
+    "processingStatus": "要確認",
+    "passengerCount": 148000,
+    "operatingRevenue": 49500000,
+    "errorCount": 1
+  },
+  {
+    "id": 2000003,
+    "companyName": "㈱東京ﾊﾞｽ",
+    "representativeName": "田中太郎",
+    "prefecture": "東京都",
+    "submissionDate": "2025-03-15",
+    "processingStatus": "未処理",
+    "passengerCount": 152000,
+    "operatingRevenue": 51000000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000004,
+    "companyName": "大阪交通株式会社",
+    "representativeName": "佐藤花子",
+    "prefecture": "大阪府",
+    "submissionDate": "2025-01-20",
+    "processingStatus": "処理済み",
+    "passengerCount": 200000,
+    "operatingRevenue": 75000000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000005,
+    "companyName": "(株)大阪交通",
+    "representativeName": "佐藤花子",
+    "prefecture": "大阪府",
+    "submissionDate": "2025-02-20",
+    "processingStatus": "処理済み",
+    "passengerCount": 198000,
+    "operatingRevenue": 74500000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000006,
+    "companyName": "大阪運輸株式会社",
+    "representativeName": "佐藤花子",
+    "prefecture": "大阪府",
+    "submissionDate": "2025-03-20",
+    "processingStatus": "要確認",
+    "passengerCount": 201000,
+    "operatingRevenue": 75500000,
+    "errorCount": 2
+  },
+  {
+    "id": 2000007,
+    "companyName": "名古屋観光バス有限会社",
+    "representativeName": "鈴木一郎",
+    "prefecture": "愛知県",
+    "submissionDate": "2025-01-25",
+    "processingStatus": "処理済み",
+    "passengerCount": 80000,
+    "operatingRevenue": 25000000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000008,
+    "companyName": "(有)名古屋観光バス",
+    "representativeName": "鈴木一郎",
+    "prefecture": "愛知県",
+    "submissionDate": "2025-02-25",
+    "processingStatus": "未処理",
+    "passengerCount": 82000,
+    "operatingRevenue": 25500000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000009,
+    "companyName": "名古屋カンコウバス(有)",
+    "representativeName": "鈴木一郎",
+    "prefecture": "愛知県",
+    "submissionDate": "2025-03-25",
+    "processingStatus": "要確認",
+    "passengerCount": 79000,
+    "operatingRevenue": 24800000,
+    "errorCount": 1
+  },
+  {
+    "id": 2000010,
+    "companyName": "福岡タクシー株式会社",
+    "representativeName": "山田次郎",
+    "prefecture": "福岡県",
+    "submissionDate": "2025-01-30",
+    "processingStatus": "処理済み",
+    "passengerCount": 120000,
+    "operatingRevenue": 40000000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000011,
+    "companyName": "㈱福岡タクシー",
+    "representativeName": "山田次郎",
+    "prefecture": "福岡県",
+    "submissionDate": "2025-02-28",
+    "processingStatus": "処理済み",
+    "passengerCount": 118000,
+    "operatingRevenue": 39500000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000012,
+    "companyName": "福岡TAXI株式会社",
+    "representativeName": "山田次郎",
+    "prefecture": "福岡県",
+    "submissionDate": "2025-03-30",
+    "processingStatus": "未処理",
+    "passengerCount": 122000,
+    "operatingRevenue": 40500000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000013,
+    "companyName": "北海道観光サービス合同会社",
+    "representativeName": "高橋三郎",
+    "prefecture": "北海道",
+    "submissionDate": "2025-02-05",
+    "processingStatus": "要確認",
+    "passengerCount": 95000,
+    "operatingRevenue": 30000000,
+    "errorCount": 3
+  },
+  {
+    "id": 2000014,
+    "companyName": "(同)北海道観光サービス",
+    "representativeName": "高橋三郎",
+    "prefecture": "北海道",
+    "submissionDate": "2025-03-05",
+    "processingStatus": "処理済み",
+    "passengerCount": 97000,
+    "operatingRevenue": 30500000,
+    "errorCount": 0
+  },
+  {
+    "id": 2000015,
+    "companyName": "北海道カンコウservice合同会社",
+    "representativeName": "高橋三郎",
+    "prefecture": "北海道",
+    "submissionDate": "2025-04-05",
+    "processingStatus": "未処理",
+    "passengerCount": 93000,
+    "operatingRevenue": 29500000,
+    "errorCount": 0
+  }
+]

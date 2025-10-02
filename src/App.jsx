@@ -10,6 +10,7 @@ import Analytics from './components/Analytics'
 import ErrorReview from './components/ErrorReview'
 import ReportOutput from './components/ReportOutput'
 import UserManagement from './components/UserManagement'
+import CompanyVariationAnalysis from './components/CompanyVariationAnalysis'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
@@ -19,6 +20,7 @@ function App() {
     { id: 'upload', label: 'データアップロード' },
     { id: 'management', label: 'データ管理' },
     { id: 'analytics', label: '集計・分析' },
+    { id: 'variation', label: '表記ゆれ分析' },
     { id: 'error', label: 'エラー・要確認' },
     { id: 'report', label: 'レポート出力' },
     { id: 'user', label: 'ユーザー管理' }
@@ -35,6 +37,8 @@ function App() {
           return <DataManagement />
         case 'analytics':
           return <Analytics />
+        case 'variation':
+          return <CompanyVariationAnalysis />
         case 'error':
           return <ErrorReview />
         case 'report':
