@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { AlertTriangle, CheckCircle, Clock, Edit, Eye, FileText, Download, Upload, Filter, Search, RefreshCw } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { AlertTriangle, CheckCircle, Clock, Edit, Eye, FileText, Download, Upload, Filter, Search, RefreshCw, X } from 'lucide-react'
 
 const DataManagement = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -12,6 +13,8 @@ const DataManagement = () => {
   const [selectedItems, setSelectedItems] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingItem, setEditingItem] = useState(null)
 
   // サンプルデータ
   const sampleData = [
@@ -54,10 +57,18 @@ const DataManagement = () => {
     setData(sampleData)
   }, [])
 
+  const [filterPrefecture, setFilterPrefecture] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
+  const [showAnomaliesOnly, setShowAnomaliesOnly] = useState(false)
+
   const filteredData = data.filter(item => {
     const matchesSearch = item.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.representativeName.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesSearch
+    const matchesPrefecture = !filterPrefecture || item.prefecture === filterPrefecture
+    const matchesStatus = !filterStatus || item.processingStatus === filterStatus
+    const matchesAnomalies = !showAnomaliesOnly || item.processingStatus === '要確認'
+    
+    return matchesSearch && matchesPrefecture && matchesStatus && matchesAnomalies
   })
 
   const paginatedData = filteredData.slice(
@@ -108,6 +119,19 @@ const DataManagement = () => {
     )
   }
 
+  const handleEditItem = (item) => {
+    setEditingItem({...item})
+    setIsEditModalOpen(true)
+  }
+
+  const handleSaveEdit = () => {
+    setData(prev => prev.map(item => 
+      item.id === editingItem.id ? editingItem : item
+    ))
+    setIsEditModalOpen(false)
+    setEditingItem(null)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -147,7 +171,30 @@ const DataManagement = () => {
                 className="pl-10"
               />
             </div>
-            <Button variant="outline">
+            <select
+              value={filterPrefecture}
+              onChange={(e) => setFilterPrefecture(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">全都道府県</option>
+              <option value="群馬県">群馬県</option>
+              <option value="茨城県">茨城県</option>
+              <option value="千葉県">千葉県</option>
+            </select>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">全ステータス</option>
+              <option value="処理済み">処理済み</option>
+              <option value="要確認">要確認</option>
+              <option value="未処理">未処理</option>
+            </select>
+            <Button 
+              variant={showAnomaliesOnly ? "default" : "outline"}
+              onClick={() => setShowAnomaliesOnly(!showAnomaliesOnly)}
+            >
               <AlertTriangle className="w-4 h-4 mr-2" />
               要確認のみ表示
             </Button>
@@ -236,7 +283,12 @@ const DataManagement = () => {
                           <Eye className="w-3 h-3 mr-1" />
                           詳細
                         </Button>
-                        <Button size="sm" variant="outline" className="text-xs">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-xs"
+                          onClick={() => handleEditItem(item)}
+                        >
                           <Edit className="w-3 h-3 mr-1" />
                           編集
                         </Button>
@@ -299,6 +351,53 @@ const DataManagement = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* 編集モーダル */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>データ編集</DialogTitle>
+          </DialogHeader>
+          {editingItem && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">事業者名</label>
+                <Input
+                  value={editingItem.companyName}
+                  onChange={(e) => setEditingItem(prev => ({ ...prev, companyName: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">代表者名</label>
+                <Input
+                  value={editingItem.representativeName}
+                  onChange={(e) => setEditingItem(prev => ({ ...prev, representativeName: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">処理状況</label>
+                <select
+                  value={editingItem.processingStatus}
+                  onChange={(e) => setEditingItem(prev => ({ ...prev, processingStatus: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="処理済み">処理済み</option>
+                  <option value="要確認">要確認</option>
+                  <option value="未処理">未処理</option>
+                </select>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button onClick={handleSaveEdit} className="flex-1">
+                  保存
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="flex-1">
+                  キャンセル
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
