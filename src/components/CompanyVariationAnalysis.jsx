@@ -39,8 +39,10 @@ const CompanyVariationAnalysis = () => {
   }
 
   const handleMergeGroup = (group) => {
+    console.log('handleMergeGroup called with:', group)
     setSelectedGroup(group)
     setShowMergeModal(true)
+    console.log('Modal state set to true')
   }
 
   const handleConfirmMerge = (mergeData) => {

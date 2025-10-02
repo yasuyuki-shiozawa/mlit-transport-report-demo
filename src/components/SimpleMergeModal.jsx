@@ -16,7 +16,12 @@ const SimpleMergeModal = ({
   const [mergeReason, setMergeReason] = useState('')
   const [selectedMaster, setSelectedMaster] = useState(null)
 
-  if (!isOpen || !group) return null
+  console.log('SimpleMergeModal render:', { isOpen, group: !!group })
+
+  if (!isOpen || !group) {
+    console.log('Modal not showing:', { isOpen, hasGroup: !!group })
+    return null
+  }
 
   const handleConfirm = () => {
     const mergeData = {
