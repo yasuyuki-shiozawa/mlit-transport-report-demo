@@ -25,23 +25,37 @@ function App() {
   ]
 
   const renderCurrentPage = () => {
-    switch (currentPage) {
-      case 'dashboard':
-        return <Dashboard />
-      case 'upload':
-        return <DataUpload />
-      case 'management':
-        return <DataManagement />
-      case 'analytics':
-        return <Analytics />
-      case 'error':
-        return <ErrorReview />
-      case 'report':
-        return <ReportOutput />
-      case 'user':
-        return <UserManagement />
-      default:
-        return <Dashboard />
+    try {
+      switch (currentPage) {
+        case 'dashboard':
+          return <Dashboard />
+        case 'upload':
+          return <DataUpload />
+        case 'management':
+          return <DataManagement />
+        case 'analytics':
+          return <Analytics />
+        case 'error':
+          return <ErrorReview />
+        case 'report':
+          return <ReportOutput />
+        case 'user':
+          return <UserManagement />
+        default:
+          return <Dashboard />
+      }
+    } catch (error) {
+      console.error('Error rendering page:', error)
+      return (
+        <div className="p-8 text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-4">エラーが発生しました</h2>
+          <p className="text-gray-600 mb-4">現在のページ: {currentPage}</p>
+          <p className="text-gray-600 mb-4">エラー: {error.message}</p>
+          <Button onClick={() => setCurrentPage('dashboard')}>
+            ダッシュボードに戻る
+          </Button>
+        </div>
+      )
     }
   }
 
