@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CheckCircle, Users, TrendingUp, FileText, Merge } from 'lucide-react'
 import { detectSimilarCompanies, generateVariationStats, normalizeCompanyName } from '@/utils/companyNameNormalizer'
-import MergeConfirmationModal from './MergeConfirmationModal'
+import SimpleMergeModal from './SimpleMergeModal'
 import sampleData from '@/sample_data.json'
 import variationData from '@/sample_variation_data.json'
 
@@ -318,7 +318,7 @@ const CompanyVariationAnalysis = () => {
       )}
 
       {/* 統合確認モーダル */}
-      <MergeConfirmationModal
+      <SimpleMergeModal
         isOpen={showMergeModal}
         onClose={() => {
           setShowMergeModal(false)
