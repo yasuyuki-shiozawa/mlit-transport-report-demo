@@ -120,8 +120,10 @@ const DataManagement = () => {
   }
 
   const handleEditItem = (item) => {
+    console.log('Edit item clicked:', item)
     setEditingItem({...item})
     setIsEditModalOpen(true)
+    console.log('Modal should be open:', true)
   }
 
   const handleSaveEdit = () => {
