@@ -11,6 +11,7 @@ import ErrorReview from './components/ErrorReview'
 import ReportOutput from './components/ReportOutput'
 import UserManagement from './components/UserManagement'
 import CompanyVariationAnalysis from './components/CompanyVariationAnalysis'
+import CompanyMasterManagement from './components/CompanyMasterManagement'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
@@ -21,6 +22,7 @@ function App() {
     { id: 'management', label: 'データ管理' },
     { id: 'analytics', label: '集計・分析' },
     { id: 'variation', label: '表記ゆれ分析' },
+    { id: 'master', label: '事業者マスタ' },
     { id: 'error', label: 'エラー・要確認' },
     { id: 'report', label: 'レポート出力' },
     { id: 'user', label: 'ユーザー管理' }
@@ -39,6 +41,8 @@ function App() {
           return <Analytics />
         case 'variation':
           return <CompanyVariationAnalysis />
+        case 'master':
+          return <CompanyMasterManagement />
         case 'error':
           return <ErrorReview />
         case 'report':
