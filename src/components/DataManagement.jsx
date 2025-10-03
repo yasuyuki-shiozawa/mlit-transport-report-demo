@@ -5,7 +5,28 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { AlertTriangle, CheckCircle, Clock, Edit, Eye, FileText, Download, Upload, Filter, Search, RefreshCw, X } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { 
+  AlertTriangle, 
+  CheckCircle, 
+  Clock, 
+  Edit, 
+  Eye, 
+  FileText, 
+  Download, 
+  Upload, 
+  Filter, 
+  Search, 
+  RefreshCw, 
+  X,
+  Link,
+  AlertCircle,
+  Merge,
+  History,
+  Users,
+  ArrowRight
+} from 'lucide-react'
+import { normalizeCompanyName } from '../utils/companyNameNormalizer'
 
 const DataManagement = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -15,11 +36,90 @@ const DataManagement = () => {
   const [itemsPerPage] = useState(10)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
+  const [showVariationWarnings, setShowVariationWarnings] = useState(true)
+  const [showVariationOnly, setShowVariationOnly] = useState(false)
+  const [selectedVariationGroup, setSelectedVariationGroup] = useState(null)
+  const [showMergeModal, setShowMergeModal] = useState(false)
 
-  // サンプルデータ
+  // 表記ゆれ検出用のサンプルデータ（表記ゆれを含む）
   const sampleData = [
     {
       id: 1000001,
+      companyName: "東京バス株式会社",
+      representativeName: "西村明彦",
+      prefecture: "群馬県",
+      submissionDate: "2025-04-27",
+      processingStatus: "未処理",
+      passengerCount: 346948,
+      operatingRevenue: 994901108,
+      errorCount: 0,
+      hasVariation: true,
+      variationGroup: "東京ばす",
+      variationCount: 4,
+      suggestedMaster: "株式会社東京バス"
+    },
+    {
+      id: 1000002,
+      companyName: "(株)東京バス",
+      representativeName: "田中太郎",
+      prefecture: "東京都",
+      submissionDate: "2025-01-15",
+      processingStatus: "処理済み",
+      passengerCount: 150000,
+      operatingRevenue: 950000000,
+      errorCount: 0,
+      hasVariation: true,
+      variationGroup: "東京ばす",
+      variationCount: 4,
+      suggestedMaster: "株式会社東京バス"
+    },
+    {
+      id: 1000003,
+      companyName: "㈱東京ﾊﾞｽ",
+      representativeName: "田中太郎",
+      prefecture: "東京都",
+      submissionDate: "2025-02-15",
+      processingStatus: "要確認",
+      passengerCount: 148000,
+      operatingRevenue: 920000000,
+      errorCount: 1,
+      hasVariation: true,
+      variationGroup: "東京ばす",
+      variationCount: 4,
+      suggestedMaster: "株式会社東京バス"
+    },
+    {
+      id: 1000004,
+      companyName: "大阪交通株式会社",
+      representativeName: "佐藤花子",
+      prefecture: "大阪府",
+      submissionDate: "2025-03-20",
+      processingStatus: "処理済み",
+      passengerCount: 299000,
+      operatingRevenue: 445000000,
+      errorCount: 0,
+      hasVariation: true,
+      variationGroup: "大阪交通",
+      variationCount: 3,
+      suggestedMaster: "株式会社大阪交通"
+    },
+    {
+      id: 1000005,
+      companyName: "(株)大阪交通",
+      representativeName: "佐藤花子",
+      prefecture: "大阪府",
+      submissionDate: "2025-03-18",
+      processingStatus: "未処理",
+      passengerCount: 300000,
+      operatingRevenue: 445000000,
+      errorCount: 0,
+      hasVariation: true,
+      variationGroup: "大阪交通",
+      variationCount: 3,
+      suggestedMaster: "株式会社大阪交通"
+    },
+    {
+      id: 1000006,
       companyName: "Azリゾートサービス株式会社",
       representativeName: "小澤秀人",
       prefecture: "群馬県",
@@ -27,10 +127,11 @@ const DataManagement = () => {
       processingStatus: "処理済み",
       passengerCount: 632874,
       operatingRevenue: 192337967,
-      errorCount: 0
+      errorCount: 0,
+      hasVariation: false
     },
     {
-      id: 1000002,
+      id: 1000007,
       companyName: "OTS交通株式会社",
       representativeName: "平良剛",
       prefecture: "茨城県",
@@ -38,10 +139,11 @@ const DataManagement = () => {
       processingStatus: "要確認",
       passengerCount: 41398,
       operatingRevenue: 524834573,
-      errorCount: 1
+      errorCount: 1,
+      hasVariation: false
     },
     {
-      id: 1000003,
+      id: 1000008,
       companyName: "いりおもて観光株式会社",
       representativeName: "屋宜靖",
       prefecture: "千葉県",
@@ -49,7 +151,8 @@ const DataManagement = () => {
       processingStatus: "未処理",
       passengerCount: 195648,
       operatingRevenue: 85278686,
-      errorCount: 0
+      errorCount: 0,
+      hasVariation: false
     }
   ]
 
@@ -67,8 +170,9 @@ const DataManagement = () => {
     const matchesPrefecture = !filterPrefecture || item.prefecture === filterPrefecture
     const matchesStatus = !filterStatus || item.processingStatus === filterStatus
     const matchesAnomalies = !showAnomaliesOnly || item.processingStatus === '要確認'
+    const matchesVariation = !showVariationOnly || item.hasVariation
     
-    return matchesSearch && matchesPrefecture && matchesStatus && matchesAnomalies
+    return matchesSearch && matchesPrefecture && matchesStatus && matchesAnomalies && matchesVariation
   })
 
   const paginatedData = filteredData.slice(
@@ -134,6 +238,51 @@ const DataManagement = () => {
     setEditingItem(null)
   }
 
+  const handleMergeVariation = (item) => {
+    const variationGroup = data.filter(d => d.variationGroup === item.variationGroup)
+    setSelectedVariationGroup({
+      normalizedKey: item.variationGroup,
+      companies: variationGroup,
+      count: variationGroup.length,
+      suggestedName: item.suggestedMaster
+    })
+    setShowMergeModal(true)
+  }
+
+  const handleConfirmMerge = () => {
+    // モックアップなので実際の統合処理は行わず、UIの更新のみ
+    alert(`${selectedVariationGroup.count}件の表記ゆれを「${selectedVariationGroup.suggestedName}」に統合しました。`)
+    setShowMergeModal(false)
+    setSelectedVariationGroup(null)
+  }
+
+  const getVariationWarningIcon = (item) => {
+    if (!item.hasVariation || !showVariationWarnings) return null
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <AlertCircle className="w-4 h-4 text-orange-500 ml-2" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="text-sm">
+              <p className="font-medium">表記ゆれの可能性があります</p>
+              <p>グループ: {item.variationGroup}</p>
+              <p>関連: {item.variationCount}件</p>
+              <p>推奨統合先: {item.suggestedMaster}</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
+  const variationStats = {
+    total: data.filter(item => item.hasVariation).length,
+    groups: [...new Set(data.filter(item => item.hasVariation).map(item => item.variationGroup))].length
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -153,6 +302,41 @@ const DataManagement = () => {
           </Button>
         </div>
       </div>
+
+      {/* 表記ゆれ警告バナー */}
+      {variationStats.total > 0 && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-orange-600" />
+                <div>
+                  <p className="font-medium text-orange-800">
+                    表記ゆれが検出されました
+                  </p>
+                  <p className="text-sm text-orange-700">
+                    {variationStats.total}件のデータに{variationStats.groups}グループの表記ゆれがあります
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => setShowVariationWarnings(!showVariationWarnings)}
+                >
+                  <Eye className="w-4 h-4 mr-1" />
+                  {showVariationWarnings ? '警告を非表示' : '警告を表示'}
+                </Button>
+                <Button size="sm">
+                  <Link className="w-4 h-4 mr-1" />
+                  表記ゆれ分析へ
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       
       {/* 検索・フィルタ */}
       <Card>
@@ -163,7 +347,7 @@ const DataManagement = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
@@ -182,6 +366,8 @@ const DataManagement = () => {
               <option value="群馬県">群馬県</option>
               <option value="茨城県">茨城県</option>
               <option value="千葉県">千葉県</option>
+              <option value="東京都">東京都</option>
+              <option value="大阪府">大阪府</option>
             </select>
             <select
               value={filterStatus}
@@ -193,12 +379,23 @@ const DataManagement = () => {
               <option value="要確認">要確認</option>
               <option value="未処理">未処理</option>
             </select>
+          </div>
+          <div className="flex gap-2 mt-4">
             <Button 
               variant={showAnomaliesOnly ? "default" : "outline"}
+              size="sm"
               onClick={() => setShowAnomaliesOnly(!showAnomaliesOnly)}
             >
               <AlertTriangle className="w-4 h-4 mr-2" />
               要確認のみ表示
+            </Button>
+            <Button 
+              variant={showVariationOnly ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowVariationOnly(!showVariationOnly)}
+            >
+              <AlertCircle className="w-4 h-4 mr-2" />
+              表記ゆれありのみ表示
             </Button>
           </div>
         </CardContent>
@@ -220,6 +417,10 @@ const DataManagement = () => {
                 <Button size="sm" variant="outline">
                   <AlertTriangle className="w-4 h-4 mr-1" />
                   要確認にする
+                </Button>
+                <Button size="sm" variant="outline">
+                  <Merge className="w-4 h-4 mr-1" />
+                  表記ゆれ統合
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setSelectedItems([])}>
                   選択解除
@@ -262,7 +463,9 @@ const DataManagement = () => {
                     key={item.id} 
                     className={`border-b hover:bg-gray-50 transition-colors ${
                       item.processingStatus === '要確認' ? 'bg-yellow-50' : ''
-                    } ${selectedItems.includes(item.id) ? 'bg-blue-50' : ''}`}
+                    } ${selectedItems.includes(item.id) ? 'bg-blue-50' : ''} ${
+                      item.hasVariation ? 'border-l-4 border-l-orange-300' : ''
+                    }`}
                   >
                     <td className="p-3">
                       <Checkbox
@@ -270,7 +473,17 @@ const DataManagement = () => {
                         onCheckedChange={() => handleSelectItem(item.id)}
                       />
                     </td>
-                    <td className="p-3 font-medium">{item.companyName}</td>
+                    <td className="p-3 font-medium">
+                      <div className="flex items-center">
+                        {item.companyName}
+                        {getVariationWarningIcon(item)}
+                      </div>
+                      {item.hasVariation && (
+                        <div className="text-xs text-orange-600 mt-1">
+                          推奨統合: {item.suggestedMaster}
+                        </div>
+                      )}
+                    </td>
                     <td className="p-3">{item.representativeName || '未入力'}</td>
                     <td className="p-3">{item.prefecture}</td>
                     <td className="p-3">{item.submissionDate}</td>
@@ -294,6 +507,17 @@ const DataManagement = () => {
                           <Edit className="w-3 h-3 mr-1" />
                           編集
                         </Button>
+                        {item.hasVariation && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-xs text-orange-600 border-orange-300"
+                            onClick={() => handleMergeVariation(item)}
+                          >
+                            <Merge className="w-3 h-3 mr-1" />
+                            統合
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -312,7 +536,7 @@ const DataManagement = () => {
       </Card>
 
       {/* 統計情報 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -352,6 +576,19 @@ const DataManagement = () => {
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-orange-600" />
+              <div>
+                <div className="text-2xl font-bold text-orange-600">
+                  {variationStats.total}
+                </div>
+                <div className="text-sm text-gray-600">表記ゆれあり</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* 編集モーダル */}
@@ -368,6 +605,11 @@ const DataManagement = () => {
                   value={editingItem.companyName}
                   onChange={(e) => setEditingItem(prev => ({ ...prev, companyName: e.target.value }))}
                 />
+                {editingItem.hasVariation && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    ⚠️ この事業者は表記ゆれの可能性があります（推奨: {editingItem.suggestedMaster}）
+                  </p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-600">代表者名</label>
@@ -393,6 +635,56 @@ const DataManagement = () => {
                   保存
                 </Button>
                 <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="flex-1">
+                  キャンセル
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 表記ゆれ統合モーダル */}
+      <Dialog open={showMergeModal} onOpenChange={setShowMergeModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Merge className="w-5 h-5" />
+              表記ゆれ統合確認
+            </DialogTitle>
+          </DialogHeader>
+          {selectedVariationGroup && (
+            <div className="space-y-4">
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h3 className="font-medium text-orange-800 mb-2">統合対象</h3>
+                <p className="text-sm text-orange-700">
+                  {selectedVariationGroup.count}件の表記ゆれを統合します
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-medium">統合される事業者名:</h4>
+                {selectedVariationGroup.companies.map((company, index) => (
+                  <div key={company.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                    <span className="text-sm">{company.companyName}</span>
+                    <span className="text-xs text-gray-500">({company.representativeName})</span>
+                    {index < selectedVariationGroup.companies.length - 1 && (
+                      <ArrowRight className="w-4 h-4 text-gray-400 ml-auto" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h4 className="font-medium text-green-800 mb-2">統合後の正式名称:</h4>
+                <p className="text-green-700 font-medium">{selectedVariationGroup.suggestedName}</p>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button onClick={handleConfirmMerge} className="flex-1">
+                  <Merge className="w-4 h-4 mr-2" />
+                  統合実行
+                </Button>
+                <Button variant="outline" onClick={() => setShowMergeModal(false)} className="flex-1">
                   キャンセル
                 </Button>
               </div>
